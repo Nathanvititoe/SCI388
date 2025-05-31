@@ -106,7 +106,6 @@ const App: React.FC = () => {
   return (
     <div className="game" ref={gameContainerRef}>
       {showIntroModal && <IntroductionModal onClose={handleIntroClose} />}
-      {/* <div className="membrane" ref={membraneRef} /> */}
       <div className="membrane-container">
         <div className="membrane-line left" ref={leftMembraneBorderRef} />
         <div className="membrane-dots">

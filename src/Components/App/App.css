@@ -11,14 +11,6 @@ body {
   background: #4f4e4e;
 }
 
-/* .membrane {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 40px;
-  background: #121212;
-} */
  .membrane-container {
   position: absolute;
   top: 0;
