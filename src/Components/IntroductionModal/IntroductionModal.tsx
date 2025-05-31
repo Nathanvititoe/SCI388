@@ -16,15 +16,18 @@ export const IntroductionModal: React.FC<Props> = ({ onClose }) => {
             <p>SCI388</p>
             <p>Nathan Vititoe</p>
           </div>
-          <p>This simulation demonstrates how osmosis works to move water across a semipermeable membrane.</p>
+          <p>
+            This simulation demonstrates osmosis — the movement of water across a semipermeable membrane in response to
+            solute concentration.
+          </p>
           <ul>
             <li>
               💧 <strong>Drag</strong> blue water molecules across the membrane
             </li>
             <li>
-              🧱 Red solute molecules <strong>can't pass</strong> through the membrane barrier so they can't be moved
+               🧂 Solute molecules <strong>can't pass</strong> through the membrane barrier so they can't be moved
             </li>
-            <li>⚖️ Balance both sides to achieve homeostasis</li>
+            <li>⚖️ Balance both sides to achieve equilibrium </li>
           </ul>
         </div>
         <button onClick={onClose} autoFocus>

@@ -11,13 +11,67 @@ body {
   background: #4f4e4e;
 }
 
-.membrane {
+/* .membrane {
   position: absolute;
   left: 50%;
   top: 0;
   bottom: 0;
   width: 40px;
   background: #121212;
+} */
+ .membrane-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.membrane-line {
+  width: 4px;
+  height: 91.5%;
+  background-color: #6A0DAD; /* Deep purple */
+  border-radius: 2px
+}
+
+.membrane-dots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.membrane-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #BB86FC;
+  opacity: 0.8;
+}
+
+.membrane {
+  position:absolute;
+  left: 50%;
+  width: 40px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    #2c2c2c,
+    #2c2c2c 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  background-image: radial-gradient(circle at center, #121212 4px, transparent 5px);
+  background-repeat: repeat-y;
+  background-position: center;
+  background-size: 10px 20px;
 }
 
 .molecule {
@@ -58,6 +112,7 @@ body {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
+  z-index: 5;
   background: #121212;
   padding: 20px 20px;
   border-radius: 8px;

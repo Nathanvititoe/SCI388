@@ -6,27 +6,33 @@ import { createMolecules } from '../../../Utils/createMolecules';
 import WaterMolecule from '../WaterMolecule/WaterMolecule';
 import { VictoryModal } from '../VictoryModal/VictoryModal';
 import confetti from 'canvas-confetti';
-/**
- * TODO:
- * fix celebration
- * style membrane
- */
+
 const App: React.FC = () => {
   const [molecules, setMolecules] = useState<Molecule[]>([]);
   const [showIntroModal, setShowIntroModal] = useState(true);
-  const waterLeft = molecules.filter((m) => m.type === 'water' && m.side === 'left').length;
-  const waterRight = molecules.filter((m) => m.type === 'water' && m.side === 'right').length;
-  const isEmpty = waterLeft <= 0 && waterRight <= 0;
-  const homeostasis = waterLeft === waterRight && !isEmpty;
   const [containerLeftOffset, setContainerLeftOffset] = useState(0);
-
-  const membraneRef = useRef<HTMLDivElement | null>(null);
+  const [dotCount, setDotCount] = useState<number>(125);
+  const rightMembraneBorderRef = useRef<HTMLDivElement | null>(null);
+  const leftMembraneBorderRef = useRef<HTMLDivElement | null>(null);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const moleculeRefs = useRef<Map<number, RefObject<HTMLDivElement | null>>>(new Map());
   const confettiCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  // water counts
+  const waterLeft = molecules.filter((m) => m.type === 'water' && m.side === 'left').length;
+  const waterRight = molecules.filter((m) => m.type === 'water' && m.side === 'right').length;
+
+  // solute counts
+  const soluteLeft = molecules.filter((m) => m.type === 'solute' && m.side === 'left').length;
+  const soluteRight = molecules.filter((m) => m.type === 'solute' && m.side === 'right').length;
+
+  // win condition
+  const isEmpty = waterLeft <= 0 && waterRight <= 0;
+  const equilibrium  = waterLeft === soluteLeft && waterRight === soluteRight && !isEmpty;
+
+  // victory celebration
   useEffect(() => {
-    if (homeostasis && confettiCanvasRef.current) {
+    if (equilibrium  && confettiCanvasRef.current) {
       const myConfetti = confetti.create(confettiCanvasRef.current, {
         resize: true,
         useWorker: true,
@@ -37,7 +43,8 @@ const App: React.FC = () => {
         origin: { y: 0.5 },
       });
     }
-  }, [homeostasis]);
+  }, [equilibrium ]);
+  
   // ensure molecules and their refs are created
   useEffect(() => {
     if (!molecules.length) return;
@@ -53,16 +60,14 @@ const App: React.FC = () => {
     if (changed) setMolecules([...molecules]); // force rerender
   }, [molecules]);
 
-  // solute counts
-  const soluteLeft = molecules.filter((m) => m.type === 'solute' && m.side === 'left').length;
-  const soluteRight = molecules.filter((m) => m.type === 'solute' && m.side === 'right').length;
-
   // handle closing the intro modal
   const handleIntroClose = () => {
     setShowIntroModal(false);
     if (gameContainerRef.current) {
       const { width, height, left } = gameContainerRef.current.getBoundingClientRect();
+      const dotSpacing = 10;
       setContainerLeftOffset(left);
+      setDotCount(Math.floor(height / dotSpacing));
       moleculeRefs.current.clear();
       const moleculesCreated = createMolecules(width, height);
       setMolecules(moleculesCreated);
@@ -71,15 +76,17 @@ const App: React.FC = () => {
 
   // handle dragging and sides calc
   const handleStop = (id: number, newX: number, newY: number) => {
-    const membraneRect = membraneRef.current?.getBoundingClientRect();
+    const rightMembraneBorderRect = rightMembraneBorderRef.current?.getBoundingClientRect();
+    const leftMembraneBorderRect = leftMembraneBorderRef.current?.getBoundingClientRect();
+
     const containerRect = gameContainerRef.current?.getBoundingClientRect();
-    if (!membraneRect || !containerRect) return;
+    if (!rightMembraneBorderRect || !leftMembraneBorderRect || !containerRect) return;
 
     const mol = molecules.find((m) => m.id === id);
     if (!mol) return;
 
-    const isLeft = newX < membraneRect.left;
-    const isRight = newX > membraneRect.right;
+    const isLeft = newX < leftMembraneBorderRect.left;
+    const isRight = newX > rightMembraneBorderRect.right;
     const newSide = isLeft ? 'left' : isRight ? 'right' : mol.side;
 
     setMolecules((prev) =>
@@ -99,7 +106,16 @@ const App: React.FC = () => {
   return (
     <div className="game" ref={gameContainerRef}>
       {showIntroModal && <IntroductionModal onClose={handleIntroClose} />}
-      <div className="membrane" ref={membraneRef} />
+      {/* <div className="membrane" ref={membraneRef} /> */}
+      <div className="membrane-container">
+        <div className="membrane-line left" ref={leftMembraneBorderRef} />
+        <div className="membrane-dots">
+          {Array.from({ length: dotCount }).map((_, i) => (
+            <div key={i} className="membrane-dot" />
+          ))}
+        </div>
+        <div className="membrane-line right" ref={rightMembraneBorderRef} />
+      </div>
       {molecules.map((mol) => {
         if (mol.type === 'water') {
           const nodeRef = moleculeRefs.current.get(mol.id);
@@ -135,7 +151,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </div>
-      {homeostasis && (
+      {equilibrium  && (
         <>
           <canvas ref={confettiCanvasRef} className="confetti-canvas" />
           <VictoryModal onClose={handleIntroClose} />

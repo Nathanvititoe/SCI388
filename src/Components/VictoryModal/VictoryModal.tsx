@@ -6,12 +6,11 @@ interface Props {
 }
 
 export const VictoryModal: React.FC<Props> = ({ onClose }) => {
-   
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>Homeostasis Achieved!</h2>
-        <div className='header-info'>
+        <h2>Equilibrium Achieved!</h2>
+        <div className="header-info">
           <p>
             Now that the water molecules are balanced on both sides of the semi-permeable membrane, the cell can have
             proper pressure and remain stable.
